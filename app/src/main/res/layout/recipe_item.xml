@@ -14,19 +14,20 @@
         android:contentDescription="@string/recipe_container"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:background="@color/ligthGrey"/>
+        android:background="@color/ligthGrey" />
 
     <ImageView
         android:id="@+id/recipe_image"
         android:layout_width="105dp"
         android:layout_height="105dp"
-        app:srcCompat="@drawable/ic_chef"
+
         app:layout_constraintStart_toStartOf="@id/container_view"
         app:layout_constraintTop_toTopOf="@id/container_view"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
         tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="8dp" />
+        tools:layout_editor_absoluteY="8dp"
+        tools:background="@drawable/ic_recipe"/>
 
     <TextView
         android:id="@+id/recipe_name"

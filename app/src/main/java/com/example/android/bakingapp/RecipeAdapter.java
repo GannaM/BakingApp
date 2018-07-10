@@ -81,9 +81,18 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeAdap
         if (!imageUrl.isEmpty()) {
             Picasso.with(mContext)
                     .load(imageUrl)
-                    .centerInside()
-                    .resize(105, 105)
+                    //.fit()
+                    //.centerInside()
+
+                    .resize(200, 200)
+                    .onlyScaleDown()
+                    .centerCrop()
+
+                    .placeholder(R.drawable.ic_recipe)
                     .into(viewHolder.mRecipeImageView);
+        }
+        else {
+            viewHolder.mRecipeImageView.setImageResource(R.drawable.ic_chef);
         }
     }
 
