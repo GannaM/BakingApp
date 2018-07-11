@@ -1,14 +1,27 @@
 package com.example.android.bakingapp.model;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
 public class Recipe {
 
+    @SerializedName("id")
     private int id;
+
+    @SerializedName("name")
     private String name;
+
+    @SerializedName("ingredients")
     private List <Ingredient> ingredients;
+
+    @SerializedName("steps")
     private List <Step> steps;
+
+    @SerializedName("servings")
     private int servings;
+
+    @SerializedName("image")
     private String imageUrl;
 
 

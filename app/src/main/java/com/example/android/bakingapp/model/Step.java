@@ -1,11 +1,22 @@
 package com.example.android.bakingapp.model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Step {
 
+    @SerializedName("id")
     private int id;
+
+    @SerializedName("shortDescription")
     private String shortDescription;
+
+    @SerializedName("description")
     private String longDescription;
+
+    @SerializedName("videoURL")
     private String videoUrl;
+
+    @SerializedName("thumbnailURL")
     private String thumbnailUrl;
 
 
