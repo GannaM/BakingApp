@@ -1,7 +1,6 @@
 package com.example.android.bakingapp;
 
 import android.content.res.Configuration;
-import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -13,7 +12,6 @@ import com.example.android.bakingapp.RecipeAdapter.RecipeAdapterOnClickHandler;
 import com.example.android.bakingapp.model.Recipe;
 import com.example.android.bakingapp.utilities.APIClient;
 import com.example.android.bakingapp.utilities.APIInterface;
-import com.example.android.bakingapp.utilities.JsonUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -31,57 +29,28 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapterOnCl
 
     private RecipeAdapter mRecipeAdapter;
 
+    private static final String LIST_KEY = "recipeList";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //final List<Recipe> recipeList = JsonUtils.parseRecipeJson(this);
-
-
-
         RecyclerView recipeRecyclerView = findViewById(R.id.recipes_recyclerview);
         mRecipeAdapter = new RecipeAdapter(this, getApplicationContext());
         recipeRecyclerView.setAdapter(mRecipeAdapter);
 
-
         if (savedInstanceState != null) {
-            String recipeJson = savedInstanceState.getString("recipeList");
-            if (!recipeJson.isEmpty()) {
-                Gson gson = new Gson();
-                Type type = new TypeToken<List<Recipe>>() {}.getType();
-                mRecipeList = gson.fromJson(recipeJson, type);
-                mRecipeAdapter.setRecipeData(mRecipeList);
-            }
+            String recipeJson = savedInstanceState.getString(LIST_KEY);
+            mRecipeList = parseStringJson(recipeJson);
+            mRecipeAdapter.setRecipeData(mRecipeList);
         }
 
         else {
-            mRecipeList = new ArrayList<>();
-
-            APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
-            Call<List<Recipe>> call = apiInterface.fetchRecipeList();
-            call.enqueue(new Callback<List<Recipe>>() {
-                @Override
-                public void onResponse(Call<List<Recipe>> call, Response<List<Recipe>> response) {
-                    Log.d("RETROFIT", response.code()+"");
-
-                    mRecipeList = response.body();
-                    mRecipeAdapter.setRecipeData(mRecipeList);
-
-                }
-
-                @Override
-                public void onFailure(Call<List<Recipe>> call, Throwable t) {
-                    call.cancel();
-                }
-            });
-
+            fetchDataAndPopulateUI();
         }
 
-
-
         boolean isTablet = getResources().getBoolean(R.bool.isTablet);
-
         if (isTablet) {
             GridLayoutManager gridLayoutManager;
 
@@ -99,12 +68,6 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapterOnCl
             recipeRecyclerView.setLayoutManager(linearLayoutManager);
         }
 
-
-        //RecipeAdapterOnClickHandler clickHandler = (RecipeAdapterOnClickHandler) this;
-
-
-
-
     }
 
     @Override
@@ -115,28 +78,54 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapterOnCl
         Type type = new TypeToken<List<Recipe>>() {}.getType();
         String json = gson.toJson(mRecipeList, type);
 
-        Log.d("TAonSaveInstanceState", json);
+        Log.d("onSaveInstanceState", json);
 
-        savedInstanceState.putString("recipeList", json);
+        savedInstanceState.putString(LIST_KEY, json);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
-
-        Gson gson = new Gson();
-        String recipeJson = savedInstanceState.getString("recipeList");
-        if (!recipeJson.isEmpty()) {
-            Type type = new TypeToken<List<Recipe>>() {}.getType();
-            mRecipeList = gson.fromJson(recipeJson, type);
-            Log.d("OnRestoreInstanceState:", mRecipeList.size() + "");
-        }
+        String recipeJson = savedInstanceState.getString(LIST_KEY);
+        mRecipeList = parseStringJson(recipeJson);
 
         super.onRestoreInstanceState(savedInstanceState);
-
     }
 
     @Override
     public void onClickRecipe(Recipe recipe) {
 
     }
+
+    private List<Recipe> parseStringJson(String json) {
+        List<Recipe> recipeList = null;
+        if (!json.isEmpty()) {
+            Gson gson = new Gson();
+            Type type = new TypeToken<List<Recipe>>() {}.getType();
+            recipeList = gson.fromJson(json, type);
+        }
+        return recipeList;
+    }
+
+    private void fetchDataAndPopulateUI() {
+        mRecipeList = new ArrayList<>();
+
+        APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
+        Call<List<Recipe>> call = apiInterface.fetchRecipeList();
+        call.enqueue(new Callback<List<Recipe>>() {
+            @Override
+            public void onResponse(Call<List<Recipe>> call, Response<List<Recipe>> response) {
+                Log.d("RETROFIT", response.code()+"");
+
+                mRecipeList = response.body();
+                mRecipeAdapter.setRecipeData(mRecipeList);
+            }
+
+            @Override
+            public void onFailure(Call<List<Recipe>> call, Throwable t) {
+                call.cancel();
+            }
+        });
+    }
+
+
 }
