@@ -1,5 +1,6 @@
 package com.example.android.bakingapp;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -103,7 +104,13 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapterOnCl
 
     @Override
     public void onClickRecipe(Recipe recipe) {
+        Gson gson = new Gson();
+        Type type = new TypeToken<Recipe>() {}.getType();
+        String json = gson.toJson(recipe, type);
 
+        Intent intent = new Intent(this, DetailActivity.class);
+        intent.putExtra(DetailActivity.RECIPE_EXTRA, json);
+        startActivity(intent);
     }
 
     private List<Recipe> parseStringJson(String json) {

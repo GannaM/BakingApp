@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:toos="http://schemas.android.com/tools"
+    android:padding="8dp">
+
+    <android.support.v7.widget.CardView
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/card_view"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        card_view:cardCornerRadius="4dp">
+
+        <TextView
+            android:id="@+id/step_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            toos:text="Recipe Introduction"
+            android:textSize="20sp"
+            android:textAlignment="center"
+            android:padding="8dp"/>
+
+    </android.support.v7.widget.CardView>
+
+
+</FrameLayout>
