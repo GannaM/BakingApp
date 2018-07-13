@@ -15,13 +15,15 @@
         android:id="@+id/ingredients_list_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginRight="8dp">
-    </ListView>
+        android:padding="16dp"
+        android:layout_margin="8dp"
+        android:background="@color/lightGrey"/>
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_margin="8dp" />
+        android:layout_height="0.5dp"
+        android:layout_margin="8dp"
+        android:background="@android:color/black"/>
 
     <TextView
         android:layout_width="match_parent"
