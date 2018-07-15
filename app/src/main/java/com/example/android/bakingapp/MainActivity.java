@@ -12,7 +12,8 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.example.android.bakingapp.RecipeAdapter.RecipeAdapterOnClickHandler;
+import com.example.android.bakingapp.adapters.RecipeAdapter;
+import com.example.android.bakingapp.adapters.RecipeAdapter.RecipeAdapterOnClickHandler;
 import com.example.android.bakingapp.model.Recipe;
 import com.example.android.bakingapp.utilities.APIClient;
 import com.example.android.bakingapp.utilities.APIInterface;

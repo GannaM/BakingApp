@@ -1,4 +1,4 @@
-package com.example.android.bakingapp;
+package com.example.android.bakingapp.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,6 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.android.bakingapp.R;
 import com.example.android.bakingapp.model.Ingredient;
 
 import java.util.List;
@@ -16,13 +17,11 @@ import java.util.zip.Inflater;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class IngredientsAdapter extends BaseAdapter {
+public class IngredientsAdapterListView extends BaseAdapter {
 
-    private Context mContext;
     private List<Ingredient> mIngredients;
 
-    public IngredientsAdapter(Context context, List<Ingredient> ingredients) {
-        mContext = context;
+    public IngredientsAdapterListView(List<Ingredient> ingredients) {
         mIngredients = ingredients;
     }
 
@@ -48,7 +47,8 @@ public class IngredientsAdapter extends BaseAdapter {
             holder = (ViewHolder) view.getTag();
         }
         else {
-            LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            Context context = parent.getContext();
+            LayoutInflater inflater = LayoutInflater.from(context);
             view = inflater.inflate(R.layout.ingredient_item, parent, false);
             holder = new ViewHolder(view);
             view.setTag(holder);

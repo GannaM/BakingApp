@@ -1,19 +1,16 @@
-package com.example.android.bakingapp;
+package com.example.android.bakingapp.adapters;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.android.bakingapp.R;
 import com.example.android.bakingapp.model.Step;
 
 import java.util.List;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class StepsAdapter extends RecyclerView.Adapter<StepsAdapter.StepsAdapterViewHolder> {
 
@@ -31,11 +28,13 @@ public class StepsAdapter extends RecyclerView.Adapter<StepsAdapter.StepsAdapter
     }
 
     public class StepsAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        @BindView(R.id.step_tv) TextView mStepShortDescripton;
+        //@BindView(R.id.step_tv) TextView mStepShortDescription;
+        public final TextView mStepShortDescription;
 
         public StepsAdapterViewHolder(View view) {
             super(view);
-            ButterKnife.bind(view);
+            //ButterKnife.bind(view);
+            mStepShortDescription = view.findViewById(R.id.step_tv);
             view.setOnClickListener(this);
         }
 
@@ -53,6 +52,7 @@ public class StepsAdapter extends RecyclerView.Adapter<StepsAdapter.StepsAdapter
     public StepsAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
         int layoutIdForListItem = R.layout.step_item;
+
         LayoutInflater inflater = LayoutInflater.from(context);
         boolean shouldAttachToParentImmediately = false;
 
@@ -65,7 +65,7 @@ public class StepsAdapter extends RecyclerView.Adapter<StepsAdapter.StepsAdapter
     public void onBindViewHolder(StepsAdapterViewHolder holder, int position) {
         Step thisStep = mStepList.get(position);
 
-        holder.mStepShortDescripton.setText(thisStep.getShortDescription());
+        holder.mStepShortDescription.setText(thisStep.getShortDescription());
     }
 
     @Override
