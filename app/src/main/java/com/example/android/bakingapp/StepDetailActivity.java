@@ -22,8 +22,7 @@ public class StepDetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_step_detail);
-
+        setContentView(R.layout.step_detail_activity);
 
         Intent intent = getIntent();
         if (intent == null) {
@@ -42,16 +41,28 @@ public class StepDetailActivity extends AppCompatActivity {
 
 
 
+        Recipe recipe = DetailActivity.getRecipe();
         FragmentManager fragmentManager = getSupportFragmentManager();
 
-        StepDetailFragment stepDetailFragment = new StepDetailFragment();
+        StepDetailFragment fragment = (StepDetailFragment) fragmentManager.findFragmentById(R.id.step_detail_fragment);
+        fragment.setStep(mStep);
+        fragment.setStepList(recipe.getSteps());
 
-        Recipe recipe = DetailActivity.getRecipe();
+        fragment.configure();
 
-        stepDetailFragment.setStepList(recipe.getSteps());
-        stepDetailFragment.setStep(mStep);
+//        StepDetailFragment stepDetailFragment = new StepDetailFragment();
+//
 
-        fragmentManager.beginTransaction().commit();
+//
+//        stepDetailFragment.setStepList(recipe.getSteps());
+//        stepDetailFragment.setStep(mStep);
+//
+//        setContentView(R.layout.step_detail_activity);
+//
+//        fragmentManager.beginTransaction()
+//                .add(stepDetailFragment, "stepDetails")
+//                .commit();
+
 
 
     }

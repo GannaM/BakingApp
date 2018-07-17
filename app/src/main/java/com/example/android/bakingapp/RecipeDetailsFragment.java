@@ -35,38 +35,39 @@ public class RecipeDetailsFragment extends Fragment implements StepsAdapter.Step
 
     private Recipe mRecipe;
 
-    //OnStepClickListener mCallback;
+    OnStepClickListener mCallback;
 
-//    @Override
+    @Override
     public void onStepClick(Step step) {
-        Gson gson = new Gson();
-        Type type = new TypeToken<Step>() {}.getType();
-        String json = gson.toJson(step, type);
-
-        Context context = getActivity().getApplicationContext();
-
-        Intent intent = new Intent(context, StepDetailActivity.class);
-        intent.putExtra(StepDetailActivity.STEP_EXTRA, json);
-        startActivity(intent);
+//        Gson gson = new Gson();
+//        Type type = new TypeToken<Step>() {}.getType();
+//        String json = gson.toJson(step, type);
+//
+//        Context context = getActivity().getApplicationContext();
+//
+//        Intent intent = new Intent(context, StepDetailActivity.class);
+//        intent.putExtra(StepDetailActivity.STEP_EXTRA, json);
+//        startActivity(intent);
+        mCallback.onStepSelected(step);
 
     }
 
-//    public interface  OnStepClickListener {
-//        void onStepSelected(int position);
-//    }
+    public interface  OnStepClickListener {
+        void onStepSelected(Step step);
+    }
 
-//    @Override
-//    public void onAttach(Context context) {
-//        super.onAttach(context);
-//
-//        try {
-//            mCallback = (OnStepClickListener) context;
-//        }
-//        catch (ClassCastException e) {
-//            throw new ClassCastException(context.toString()
-//                    + " must implement OnStepClickListener");
-//        }
-//    }
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        try {
+            mCallback = (OnStepClickListener) context;
+        }
+        catch (ClassCastException e) {
+            throw new ClassCastException(context.toString()
+                    + " must implement OnStepClickListener");
+        }
+    }
 
     public RecipeDetailsFragment() {
     }

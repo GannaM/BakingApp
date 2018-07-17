@@ -8,13 +8,14 @@ import android.widget.Toast;
 
 import com.example.android.bakingapp.adapters.StepsAdapter;
 import com.example.android.bakingapp.model.Recipe;
+import com.example.android.bakingapp.model.Step;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.List;
 
-public class DetailActivity extends AppCompatActivity {
+public class DetailActivity extends AppCompatActivity implements RecipeDetailsFragment.OnStepClickListener {
 
     public static final String RECIPE_EXTRA = "recipe_extra";
 
@@ -49,4 +50,25 @@ public class DetailActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public void onStepSelected(Step step) {
+//        Bundle b = new Bundle();
+//        b.putString("videoUrl", step.getVideoUrl());
+//        b.putString("descripton", step.getLongDescription());
+//        b.putString("thumbnailUrl", step.getThumbnailUrl());
+//
+//        final Intent intent = new Intent(this, StepDetailActivity.class);
+//        intent.putExtras(b);
+//        startActivity(intent);
+
+        Gson gson = new Gson();
+        Type type = new TypeToken<Step>() {}.getType();
+        String json = gson.toJson(step, type);
+
+        Intent intent = new Intent(this, StepDetailActivity.class);
+        intent.putExtra(StepDetailActivity.STEP_EXTRA, json);
+        startActivity(intent);
+
+
+    }
 }

@@ -25,7 +25,11 @@
                 android:value=".MainActivity"/>
         </activity>
 
-        <activity android:name=".StepDetailActivity" />
+        <activity android:name=".StepDetailActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".DetailActivity"/>
+        </activity>
 
     </application>
 
