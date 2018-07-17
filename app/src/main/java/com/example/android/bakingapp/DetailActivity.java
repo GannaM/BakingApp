@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
+import com.example.android.bakingapp.adapters.StepsAdapter;
 import com.example.android.bakingapp.model.Recipe;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -41,10 +42,11 @@ public class DetailActivity extends AppCompatActivity {
 
         setContentView(R.layout.detail_activity);
 
-
     }
 
     public static Recipe getRecipe() {
         return mRecipe;
     }
+
+
 }

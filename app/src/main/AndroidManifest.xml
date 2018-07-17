@@ -25,6 +25,8 @@
                 android:value=".MainActivity"/>
         </activity>
 
+        <activity android:name=".StepDetailActivity" />
+
     </application>
 
 </manifest>

@@ -19,7 +19,7 @@ public class StepsAdapter extends RecyclerView.Adapter<StepsAdapter.StepsAdapter
     private final StepsAdapterOnClickHandler mClickHandler;
 
     public interface StepsAdapterOnClickHandler {
-        void onStepClick(String videoUrl, String stepDescription);
+        void onStepClick(Step step);
     }
 
     public StepsAdapter(StepsAdapterOnClickHandler clickHandler, List<Step> stepList) {
@@ -42,9 +42,7 @@ public class StepsAdapter extends RecyclerView.Adapter<StepsAdapter.StepsAdapter
         public void onClick(View v) {
             int adapterPosition = getAdapterPosition();
             Step step = mStepList.get(adapterPosition);
-            String videourl = step.getVideoUrl();
-            String description = step.getLongDescription();
-            mClickHandler.onStepClick(videourl, description);
+            mClickHandler.onStepClick(step);
         }
     }
 

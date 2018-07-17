@@ -1,7 +1,9 @@
 package com.example.android.bakingapp;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,31 +15,45 @@ import com.example.android.bakingapp.adapters.IngredientsAdapter;
 import com.example.android.bakingapp.adapters.IngredientsAdapterListView;
 import com.example.android.bakingapp.adapters.StepsAdapter;
 import com.example.android.bakingapp.model.Ingredient;
+import com.example.android.bakingapp.model.Recipe;
 import com.example.android.bakingapp.model.Step;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-public class RecipeDetailsFragment extends Fragment implements StepsAdapter.StepsAdapterOnClickHandler{
+public class RecipeDetailsFragment extends Fragment implements StepsAdapter.StepsAdapterOnClickHandler {
 
-    //@BindView(R.id.ingredients_list_view) ListView ingredientsListView;
     @BindView(R.id.ingredients_list_recycler_view) RecyclerView ingredientRecyclerView;
     @BindView(R.id.steps_list_recycler_view) RecyclerView stepsRecyclerView;
     private Unbinder unbinder;
 
+    private Recipe mRecipe;
+
     //OnStepClickListener mCallback;
 
-    @Override
-    public void onStepClick(String videoUrl, String stepDescription) {
+//    @Override
+    public void onStepClick(Step step) {
+        Gson gson = new Gson();
+        Type type = new TypeToken<Step>() {}.getType();
+        String json = gson.toJson(step, type);
+
+        Context context = getActivity().getApplicationContext();
+
+        Intent intent = new Intent(context, StepDetailActivity.class);
+        intent.putExtra(StepDetailActivity.STEP_EXTRA, json);
+        startActivity(intent);
 
     }
 
-    public interface  OnStepClickListener {
-        void onStepSelected(int position);
-    }
+//    public interface  OnStepClickListener {
+//        void onStepSelected(int position);
+//    }
 
 //    @Override
 //    public void onAttach(Context context) {
@@ -64,28 +80,16 @@ public class RecipeDetailsFragment extends Fragment implements StepsAdapter.Step
         unbinder = ButterKnife.bind(this, rootView);
 
         Context context = getActivity().getApplicationContext();
+        mRecipe = DetailActivity.getRecipe();
 
-        List<Ingredient> ingredientList = DetailActivity.getRecipe().getIngredients();
-        //IngredientsAdapterListView ingredientsAdapter = new IngredientsAdapterListView(ingredientList);
+        List<Ingredient> ingredientList = mRecipe.getIngredients();
         IngredientsAdapter ingredientsAdapter = new IngredientsAdapter(ingredientList);
-        //ingredientsListView.setAdapter(ingredientsAdapter);
         LinearLayoutManager ingredientsLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
         ingredientRecyclerView.setLayoutManager(ingredientsLayoutManager);
         ingredientRecyclerView.setAdapter(ingredientsAdapter);
 
-//        ingredientsListView.setOnTouchListener(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                v.getParent().requestDisallowInterceptTouchEvent(true);
-//                return false;
-//            }
-//        });
-//        setListViewHeightBasedOnChildren(ingredientsListView);
-
-        List<Step> stepList = DetailActivity.getRecipe().getSteps();
-
+        List<Step> stepList = mRecipe.getSteps();
         LinearLayoutManager layoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
-
         StepsAdapter stepsAdapter = new StepsAdapter(this, stepList);
         stepsRecyclerView.setLayoutManager(layoutManager);
         stepsRecyclerView.setAdapter(stepsAdapter);
@@ -93,4 +97,9 @@ public class RecipeDetailsFragment extends Fragment implements StepsAdapter.Step
         return rootView;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
+    }
 }
