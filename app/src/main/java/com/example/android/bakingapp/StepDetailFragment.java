@@ -4,6 +4,7 @@ import android.app.PendingIntent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
@@ -21,6 +22,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.android.bakingapp.model.Recipe;
 import com.example.android.bakingapp.model.Step;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -85,6 +87,20 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
         View rootView = inflater.inflate(R.layout.fragment_step_detail, container, false);
         unbinder = ButterKnife.bind(this, rootView);
 
+        if (savedInstanceState != null) {
+            mStepId = savedInstanceState.getInt("stepId");
+            Recipe recipe = DetailActivity.getRecipe();
+            mStepList = recipe.getSteps();
+            mStep = mStepList.get(mStepId);
+
+            boolean playerIsActive = savedInstanceState.getBoolean("playerState");
+            if (playerIsActive) {
+                long playerPosition = savedInstanceState.getLong("playerPosition");
+                configure();
+                mExoPlayer.seekTo(playerPosition);
+            }
+            configure();
+        }
 
         return rootView;
     }
@@ -113,7 +129,33 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
         mButtonNext.setEnabled(true);
     }
 
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        boolean playerIsActive = false;
+        if (mExoPlayer != null) {
+            playerIsActive = true;
+            long playerPosition = mExoPlayer.getCurrentPosition();
+            outState.putLong("playerPosition", playerPosition);
+        }
+        outState.putBoolean("playerState", playerIsActive);
+        outState.putInt("stepId", mStepId);
 
+    }
+
+//    @Override
+//    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+//        super.onViewStateRestored(savedInstanceState);
+//        mStepId = savedInstanceState.getInt("stepId");
+//        mStep = mStepList.get(mStepId);
+//
+//        boolean playerIsActive = savedInstanceState.getBoolean("playerState");
+//        if (playerIsActive) {
+//            long playerPosition = savedInstanceState.getLong("playerState");
+//            mExoPlayer.seekTo(playerPosition);
+//
+//        }
+//    }
 
     public void configure() {
         mStepId = mStep.getId();

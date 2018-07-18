@@ -24,30 +24,34 @@ public class StepDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.step_detail_activity);
 
-        Intent intent = getIntent();
-        if (intent == null) {
-            finish();
-            Toast.makeText(this, R.string.detail_error_message, Toast.LENGTH_SHORT).show();
-        }
-
-        String json = intent.getStringExtra(STEP_EXTRA);
-        if (json != null) {
-            if (!json.isEmpty()) {
-                Gson gson = new Gson();
-                Type type = new TypeToken<Step>() {}.getType();
-                mStep = gson.fromJson(json, type);
+            Intent intent = getIntent();
+            if (intent == null) {
+                finish();
+                Toast.makeText(this, R.string.detail_error_message, Toast.LENGTH_SHORT).show();
             }
-        }
+
+            String json = intent.getStringExtra(STEP_EXTRA);
+            if (json != null) {
+                if (!json.isEmpty()) {
+                    Gson gson = new Gson();
+                    Type type = new TypeToken<Step>() {}.getType();
+                    mStep = gson.fromJson(json, type);
+                }
+            }
 
 
-        Recipe recipe = DetailActivity.getRecipe();
-        FragmentManager fragmentManager = getSupportFragmentManager();
+            Recipe recipe = DetailActivity.getRecipe();
 
-        StepDetailFragment fragment = (StepDetailFragment) fragmentManager.findFragmentById(R.id.step_detail_fragment);
-        fragment.setStep(mStep);
-        fragment.setStepList(recipe.getSteps());
+            FragmentManager fragmentManager = getSupportFragmentManager();
 
-        fragment.configure();
+            StepDetailFragment fragment = (StepDetailFragment) fragmentManager.findFragmentById(R.id.step_detail_fragment);
+            fragment.setStepList(recipe.getSteps());
+
+            if (savedInstanceState == null) {
+                fragment.setStep(mStep);
+                fragment.configure();
+            }
+
 
 
     }

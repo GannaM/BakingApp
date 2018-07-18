@@ -39,17 +39,7 @@ public class RecipeDetailsFragment extends Fragment implements StepsAdapter.Step
 
     @Override
     public void onStepClick(Step step) {
-//        Gson gson = new Gson();
-//        Type type = new TypeToken<Step>() {}.getType();
-//        String json = gson.toJson(step, type);
-//
-//        Context context = getActivity().getApplicationContext();
-//
-//        Intent intent = new Intent(context, StepDetailActivity.class);
-//        intent.putExtra(StepDetailActivity.STEP_EXTRA, json);
-//        startActivity(intent);
         mCallback.onStepSelected(step);
-
     }
 
     public interface  OnStepClickListener {
