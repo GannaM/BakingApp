@@ -19,6 +19,7 @@ public class StepDetailActivity extends AppCompatActivity {
     public static final String STEP_EXTRA = "step_extra";
     private Step mStep;
 
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

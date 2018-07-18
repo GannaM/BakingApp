@@ -1,5 +1,6 @@
 package com.example.android.bakingapp;
 
+import android.support.v4.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -20,6 +21,7 @@ public class DetailActivity extends AppCompatActivity implements RecipeDetailsFr
     public static final String RECIPE_EXTRA = "recipe_extra";
 
     private static Recipe mRecipe;
+    private boolean isTablet;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +46,20 @@ public class DetailActivity extends AppCompatActivity implements RecipeDetailsFr
         setContentView(R.layout.detail_activity);
 
         setTitle(mRecipe.getName());
+        isTablet = getResources().getBoolean(R.bool.isTablet);
+
+        if (isTablet & savedInstanceState == null) {
+            FragmentManager fragmentManager = getSupportFragmentManager();
+
+            StepDetailFragment fragment = new StepDetailFragment();
+            fragment.setStepList(mRecipe.getSteps());
+            fragment.setStep(mRecipe.getSteps().get(0));
+            //fragment.configure();
+
+            fragmentManager.beginTransaction()
+                    .add(R.id.step_fragment, fragment)
+                    .commit();
+        }
 
     }
 
@@ -55,13 +71,27 @@ public class DetailActivity extends AppCompatActivity implements RecipeDetailsFr
     @Override
     public void onStepSelected(Step step) {
 
-        Gson gson = new Gson();
-        Type type = new TypeToken<Step>() {}.getType();
-        String json = gson.toJson(step, type);
+        if (isTablet) {
+            StepDetailFragment newFragment = new StepDetailFragment();
+            newFragment.setStepList(mRecipe.getSteps());
+            newFragment.setStep(step);
 
-        Intent intent = new Intent(this, StepDetailActivity.class);
-        intent.putExtra(StepDetailActivity.STEP_EXTRA, json);
-        startActivity(intent);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.step_fragment, newFragment)
+                    .commit();
+
+        }
+        else {
+            Gson gson = new Gson();
+            Type type = new TypeToken<Step>() {}.getType();
+            String json = gson.toJson(step, type);
+
+            Intent intent = new Intent(this, StepDetailActivity.class);
+            intent.putExtra(StepDetailActivity.STEP_EXTRA, json);
+            startActivity(intent);
+        }
+
+
 
 
     }
