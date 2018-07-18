@@ -1,5 +1,8 @@
 package com.example.android.bakingapp;
 
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v4.app.Fragment;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
@@ -75,21 +78,7 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
         View rootView = inflater.inflate(R.layout.fragment_step_detail, container, false);
         unbinder = ButterKnife.bind(this, rootView);
 
-        //TextView mDescription = rootView.findViewById(R.id.step_description_tv);
 
-
-//        if (mStep.getId() == 0) {
-//            mButtonPrevious.setEnabled(false);
-//        }
-//        if (mStep.getId() == mStepList.size()-1) {
-//            mButtonNext.setEnabled(false);
-//        }
-
-//        initializeMediaSession();
-//        initializePlayer(Uri.parse(mStep.getVideoUrl()));
-
-
-//        mDescription.setText(mStep.getLongDescription());
 
         return rootView;
     }
@@ -107,6 +96,7 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
 
 
         mDescription.setText(mStep.getLongDescription());
+        //mPlayerView.setDefaultArtwork(BitmapFactory.decodeResource(getResources(), R.drawable.cooking));
     }
 
 
@@ -121,6 +111,7 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        releasePlayer();
         unbinder.unbind();
     }
 
@@ -153,7 +144,8 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
             TrackSelector trackSelector = new DefaultTrackSelector();
             LoadControl loadControl = new DefaultLoadControl();
             mExoPlayer = ExoPlayerFactory.newSimpleInstance(context, trackSelector, loadControl);
-            mExoPlayer.addListener(this);
+            mPlayerView.setPlayer(mExoPlayer);
+            //mExoPlayer.addListener(this);
 
             String userAgent = Util.getUserAgent(context, "BakingApp");
             MediaSource mediaSource = new ExtractorMediaSource(mediaUri, new DefaultDataSourceFactory(
@@ -162,6 +154,12 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
             mExoPlayer.prepare(mediaSource);
             mExoPlayer.setPlayWhenReady(true);
         }
+    }
+
+    private void releasePlayer() {
+        mExoPlayer.stop();
+        mExoPlayer.release();
+        mExoPlayer = null;
     }
 
     private class MySessionCallback extends MediaSessionCompat.Callback {

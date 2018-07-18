@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.exoplayer2.ui.SimpleExoPlayerView
+        android:id="@+id/playerView"
+        android:layout_width="match_parent"
+        android:layout_height="191dp"
+
+        android:layout_weight="3" />
+
+    <TextView
+        android:id="@+id/step_description_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+
+        android:layout_marginEnd="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="36dp"
+        android:textSize="20sp"
+
+        tools:text="1. Preheat the oven to 350\u00b0F. Butter a 9\'' deep dish pie pan."
+        android:layout_weight="2"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_weight="1">
+
+        <Button
+            android:id="@+id/button_previous"
+            android:text="@string/button_label_previous"
+            android:layout_width="110dp"
+            android:layout_height="wrap_content"
+
+
+            android:layout_marginBottom="16dp"
+
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+
+            />
+
+        <Button
+            android:id="@+id/button_next"
+            android:text="@string/button_label_next"
+            android:layout_width="110dp"
+            android:layout_height="wrap_content"
+
+            android:layout_marginBottom="16dp"
+
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+
+            android:layout_marginRight="16dp"
+            android:layout_marginEnd="16dp"
+
+            />
+    </LinearLayout>
+
+</LinearLayout>

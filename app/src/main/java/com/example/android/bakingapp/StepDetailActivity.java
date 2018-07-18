@@ -40,7 +40,6 @@ public class StepDetailActivity extends AppCompatActivity {
         }
 
 
-
         Recipe recipe = DetailActivity.getRecipe();
         FragmentManager fragmentManager = getSupportFragmentManager();
 
@@ -49,20 +48,6 @@ public class StepDetailActivity extends AppCompatActivity {
         fragment.setStepList(recipe.getSteps());
 
         fragment.configure();
-
-//        StepDetailFragment stepDetailFragment = new StepDetailFragment();
-//
-
-//
-//        stepDetailFragment.setStepList(recipe.getSteps());
-//        stepDetailFragment.setStep(mStep);
-//
-//        setContentView(R.layout.step_detail_activity);
-//
-//        fragmentManager.beginTransaction()
-//                .add(stepDetailFragment, "stepDetails")
-//                .commit();
-
 
 
     }
