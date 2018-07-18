@@ -41,6 +41,7 @@ public class StepDetailActivity extends AppCompatActivity {
 
 
             Recipe recipe = DetailActivity.getRecipe();
+            setTitle(recipe.getName());
 
             FragmentManager fragmentManager = getSupportFragmentManager();
 

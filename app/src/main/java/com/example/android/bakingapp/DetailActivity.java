@@ -43,6 +43,8 @@ public class DetailActivity extends AppCompatActivity implements RecipeDetailsFr
 
         setContentView(R.layout.detail_activity);
 
+        setTitle(mRecipe.getName());
+
     }
 
     public static Recipe getRecipe() {
@@ -52,14 +54,6 @@ public class DetailActivity extends AppCompatActivity implements RecipeDetailsFr
 
     @Override
     public void onStepSelected(Step step) {
-//        Bundle b = new Bundle();
-//        b.putString("videoUrl", step.getVideoUrl());
-//        b.putString("descripton", step.getLongDescription());
-//        b.putString("thumbnailUrl", step.getThumbnailUrl());
-//
-//        final Intent intent = new Intent(this, StepDetailActivity.class);
-//        intent.putExtras(b);
-//        startActivity(intent);
 
         Gson gson = new Gson();
         Type type = new TypeToken<Step>() {}.getType();
