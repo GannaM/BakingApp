@@ -1,5 +1,6 @@
 package com.example.android.bakingapp;
 
+import android.app.PendingIntent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,11 +12,13 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.media.session.MediaButtonReceiver;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.android.bakingapp.model.Step;
@@ -37,6 +40,7 @@ import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
+import com.squareup.picasso.Picasso;
 
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -45,11 +49,13 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 
 public class StepDetailFragment extends Fragment implements ExoPlayer.EventListener {
 
     @BindView(R.id.playerView) SimpleExoPlayerView mPlayerView;
+    @BindView(R.id.stepView) ImageView mStepImageView;
     @BindView(R.id.step_description_tv) TextView mDescription;
     @BindView(R.id.button_next) Button mButtonNext;
     @BindView(R.id.button_previous) Button mButtonPrevious;
@@ -62,6 +68,7 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
 
     private List<Step> mStepList;
     private Step mStep;
+    private int mStepId;
 
     private SimpleExoPlayer mExoPlayer;
     private static MediaSessionCompat mMediaSession;
@@ -79,24 +86,77 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
         unbinder = ButterKnife.bind(this, rootView);
 
 
-
         return rootView;
     }
 
+    @OnClick(R.id.button_next)
+    public void showNextRecipe() {
+        mStepId++;
+        mStep = mStepList.get(mStepId);
+
+        releasePlayer();
+        deactivateMediaSession();
+
+        configure();
+        mButtonPrevious.setEnabled(true);
+    }
+
+    @OnClick(R.id.button_previous)
+    public void showPreviousRecipe() {
+        mStepId--;
+        mStep = mStepList.get(mStepId);
+
+        deactivateMediaSession();
+        releasePlayer();
+
+        configure();
+        mButtonNext.setEnabled(true);
+    }
+
+
+
     public void configure() {
-        if (mStep.getId() == 0) {
+        mStepId = mStep.getId();
+        if (mStepId == 0) {
             mButtonPrevious.setEnabled(false);
         }
-        if (mStep.getId() == mStepList.size()-1) {
+        if (mStepId == mStepList.size()-1) {
             mButtonNext.setEnabled(false);
         }
 
-        initializeMediaSession();
-        initializePlayer(Uri.parse(mStep.getVideoUrl()));
-
+        String videoUrl = mStep.getVideoUrl();
+        if (!videoUrl.isEmpty()) {
+            initializeMediaSession();
+            initializePlayer(Uri.parse(videoUrl));
+            setPlayerView();
+        }
+        else {
+            setStepImageView();
+        }
 
         mDescription.setText(mStep.getLongDescription());
         //mPlayerView.setDefaultArtwork(BitmapFactory.decodeResource(getResources(), R.drawable.cooking));
+    }
+
+    private void setStepImageView() {
+        mPlayerView.setVisibility(View.INVISIBLE);
+
+        String thumbnailUrl = mStep.getThumbnailUrl();
+        if (!thumbnailUrl.isEmpty()) {
+            Picasso.with(getContext())
+                    .load(thumbnailUrl)
+                    //.resize(400, 400)
+                    //.onlyScaleDown()
+                   // .centerCrop()
+                    .placeholder(R.drawable.cooking)
+                    .into(mStepImageView);
+        }
+        mStepImageView.setVisibility(View.VISIBLE);
+    }
+
+    private void setPlayerView() {
+        mStepImageView.setVisibility(View.INVISIBLE);
+        mPlayerView.setVisibility(View.VISIBLE);
     }
 
 
@@ -112,7 +172,15 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
     public void onDestroyView() {
         super.onDestroyView();
         releasePlayer();
+        deactivateMediaSession();
+
         unbinder.unbind();
+    }
+
+    private void deactivateMediaSession() {
+        if (mMediaSession != null) {
+            mMediaSession.setActive(false);
+        }
     }
 
     private void initializeMediaSession() {
@@ -128,11 +196,12 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
         mStateBuilder = new PlaybackStateCompat.Builder().setActions(
                 PlaybackStateCompat.ACTION_PLAY |
                         PlaybackStateCompat.ACTION_PAUSE |
-                        PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS |
-                        PlaybackStateCompat.ACTION_PLAY_PAUSE);
-
+                        PlaybackStateCompat.ACTION_PLAY_PAUSE |
+                        PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS);
 
         mMediaSession.setPlaybackState(mStateBuilder.build());
+
+        mMediaSession.setCallback(new MySessionCallback());
 
         mMediaSession.setActive(true);
     }
@@ -145,7 +214,7 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
             LoadControl loadControl = new DefaultLoadControl();
             mExoPlayer = ExoPlayerFactory.newSimpleInstance(context, trackSelector, loadControl);
             mPlayerView.setPlayer(mExoPlayer);
-            //mExoPlayer.addListener(this);
+            mExoPlayer.addListener(this);
 
             String userAgent = Util.getUserAgent(context, "BakingApp");
             MediaSource mediaSource = new ExtractorMediaSource(mediaUri, new DefaultDataSourceFactory(
@@ -157,9 +226,12 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
     }
 
     private void releasePlayer() {
-        mExoPlayer.stop();
-        mExoPlayer.release();
-        mExoPlayer = null;
+        if (mExoPlayer != null) {
+            mExoPlayer.stop();
+            mExoPlayer.release();
+            mExoPlayer = null;
+        }
+
     }
 
     private class MySessionCallback extends MediaSessionCompat.Callback {
@@ -206,6 +278,15 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
 
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+        if((playbackState == ExoPlayer.STATE_READY) && playWhenReady){
+            mStateBuilder.setState(PlaybackStateCompat.STATE_PLAYING,
+                    mExoPlayer.getCurrentPosition(), 1f);
+        } else if((playbackState == ExoPlayer.STATE_READY)){
+            mStateBuilder.setState(PlaybackStateCompat.STATE_PAUSED,
+                    mExoPlayer.getCurrentPosition(), 1f);
+        }
+        mMediaSession.setPlaybackState(mStateBuilder.build());
+        //showNotification(mStateBuilder.build());
 
     }
 
@@ -218,4 +299,7 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
     public void onPositionDiscontinuity() {
 
     }
+
+
+
 }
