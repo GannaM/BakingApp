@@ -10,6 +10,7 @@ import android.widget.Toast;
 import com.example.android.bakingapp.adapters.StepsAdapter;
 import com.example.android.bakingapp.model.Recipe;
 import com.example.android.bakingapp.model.Step;
+import com.example.android.bakingapp.utilities.GsonUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -37,9 +38,7 @@ public class DetailActivity extends AppCompatActivity implements RecipeDetailsFr
         String json = intent.getStringExtra(RECIPE_EXTRA);
         if (json != null) {
             if (!json.isEmpty()) {
-                Gson gson = new Gson();
-                Type type = new TypeToken<Recipe>() {}.getType();
-                mRecipe = gson.fromJson(json, type);
+                mRecipe = GsonUtils.jsonStringToRecipe(json);
             }
         }
 
@@ -82,12 +81,12 @@ public class DetailActivity extends AppCompatActivity implements RecipeDetailsFr
 
         }
         else {
-            Gson gson = new Gson();
-            Type type = new TypeToken<Step>() {}.getType();
-            String json = gson.toJson(step, type);
+            String stepJson = GsonUtils.objectToJsonString(step);
+            String recipeJson = GsonUtils.objectToJsonString(mRecipe);
 
             Intent intent = new Intent(this, StepDetailActivity.class);
-            intent.putExtra(StepDetailActivity.STEP_EXTRA, json);
+            intent.putExtra(StepDetailActivity.STEP_EXTRA, stepJson);
+            intent.putExtra(StepDetailActivity.RECIPE_EXTRA, recipeJson);
             startActivity(intent);
         }
 

@@ -17,6 +17,7 @@ import com.example.android.bakingapp.adapters.RecipeAdapter.RecipeAdapterOnClick
 import com.example.android.bakingapp.model.Recipe;
 import com.example.android.bakingapp.utilities.APIClient;
 import com.example.android.bakingapp.utilities.APIInterface;
+import com.example.android.bakingapp.utilities.GsonUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -86,9 +87,7 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapterOnCl
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
 
-        Gson gson = new Gson();
-        Type type = new TypeToken<List<Recipe>>() {}.getType();
-        String json = gson.toJson(mRecipeList, type);
+        String json = GsonUtils.recipeListToJsonString(mRecipeList);
 
         Log.d("onSaveInstanceState", json);
 
@@ -105,9 +104,7 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapterOnCl
 
     @Override
     public void onClickRecipe(Recipe recipe) {
-        Gson gson = new Gson();
-        Type type = new TypeToken<Recipe>() {}.getType();
-        String json = gson.toJson(recipe, type);
+        String json = GsonUtils.objectToJsonString(recipe);
 
         Intent intent = new Intent(this, DetailActivity.class);
         intent.putExtra(DetailActivity.RECIPE_EXTRA, json);
@@ -117,9 +114,7 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapterOnCl
     private List<Recipe> parseStringJson(String json) {
         List<Recipe> recipeList = null;
         if (!json.isEmpty()) {
-            Gson gson = new Gson();
-            Type type = new TypeToken<List<Recipe>>() {}.getType();
-            recipeList = gson.fromJson(json, type);
+            recipeList = GsonUtils.jsonStringToRecipeList(json);
         }
         return recipeList;
     }
