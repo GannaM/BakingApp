@@ -1,18 +1,25 @@
 package com.example.android.bakingapp;
 
+import android.app.Fragment;
+import android.appwidget.AppWidgetManager;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.example.android.bakingapp.adapters.StepsAdapter;
 import com.example.android.bakingapp.model.Recipe;
 import com.example.android.bakingapp.model.Step;
 import com.example.android.bakingapp.utilities.GsonUtils;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -24,10 +31,11 @@ public class DetailActivity extends AppCompatActivity implements RecipeDetailsFr
     private static Recipe mRecipe;
     private boolean isTablet;
 
+    //private SharedPreferences mSharedPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
 
         Intent intent = getIntent();
         if (intent == null) {
@@ -36,6 +44,7 @@ public class DetailActivity extends AppCompatActivity implements RecipeDetailsFr
         }
 
         String json = intent.getStringExtra(RECIPE_EXTRA);
+        Log.d("omg", "onCreate: " + json);
         if (json != null) {
             if (!json.isEmpty()) {
                 mRecipe = GsonUtils.jsonStringToRecipe(json);
@@ -43,8 +52,13 @@ public class DetailActivity extends AppCompatActivity implements RecipeDetailsFr
         }
 
         setContentView(R.layout.detail_activity);
-
         setTitle(mRecipe.getName());
+
+        //Fragment recipeFragment = getFragmentManager().findFragmentById(R.id.recipe_detail_fragment);
+
+
+
+
         isTablet = getResources().getBoolean(R.bool.isTablet);
 
         if (isTablet & savedInstanceState == null) {
@@ -79,8 +93,7 @@ public class DetailActivity extends AppCompatActivity implements RecipeDetailsFr
                     .replace(R.id.step_fragment, newFragment)
                     .commit();
 
-        }
-        else {
+        } else {
             String stepJson = GsonUtils.objectToJsonString(step);
             String recipeJson = GsonUtils.objectToJsonString(mRecipe);
 
@@ -89,9 +102,6 @@ public class DetailActivity extends AppCompatActivity implements RecipeDetailsFr
             intent.putExtra(StepDetailActivity.RECIPE_EXTRA, recipeJson);
             startActivity(intent);
         }
-
-
-
 
     }
 }

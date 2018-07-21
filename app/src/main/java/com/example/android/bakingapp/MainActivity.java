@@ -1,7 +1,11 @@
 package com.example.android.bakingapp;
 
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -31,7 +35,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity implements RecipeAdapterOnClickHandler {
+public class MainActivity extends AppCompatActivity implements RecipeAdapterOnClickHandler, SharedPreferences.OnSharedPreferenceChangeListener {
 
     @BindView(R.id.pb_loading_indicator) ProgressBar mLoadingIndicator;
     @BindView(R.id.tv_error_message_display) TextView mErrorMessageDisplay;
@@ -41,6 +45,8 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapterOnCl
     private RecipeAdapter mRecipeAdapter;
 
     private static final String LIST_KEY = "recipeList";
+
+    SharedPreferences mSharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +87,15 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapterOnCl
             mRecipeRecyclerView.setLayoutManager(linearLayoutManager);
         }
 
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        mSharedPreferences.registerOnSharedPreferenceChangeListener(this);
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mSharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
     }
 
     @Override
@@ -108,6 +123,13 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapterOnCl
 
         Intent intent = new Intent(this, DetailActivity.class);
         intent.putExtra(DetailActivity.RECIPE_EXTRA, json);
+
+        // Save recipe to SharedPreferences
+        SharedPreferences.Editor prefEditor = mSharedPreferences.edit();
+        String recipeKey = getString(R.string.desired_recipe_key);
+        prefEditor.putString(recipeKey, json);
+        prefEditor.apply();
+
         startActivity(intent);
     }
 
@@ -157,4 +179,19 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapterOnCl
     }
 
 
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+
+        // Make widgets update
+        Intent widgetUpdateIntent = new Intent(this, RecipeWidgetProvider.class);
+        widgetUpdateIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
+        int[] ids = appWidgetManager.getAppWidgetIds(new ComponentName(this, RecipeWidgetProvider.class));
+        if (ids != null && ids.length > 0) {
+            appWidgetManager.notifyAppWidgetViewDataChanged(ids, R.id.recipe_widget);
+            widgetUpdateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+            this.sendBroadcast(widgetUpdateIntent);
+        }
+
+    }
 }

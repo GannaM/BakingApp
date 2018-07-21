@@ -12,4 +12,8 @@
     <string name="detail_error_message">Recipe data is not available</string>
     <string name="button_label_previous">\u003C Previous</string>
     <string name="button_label_next">Next \u003E</string>
+
+    <string name="desired_recipe_key" translatable="false">desired_recipe</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
 </resources>
