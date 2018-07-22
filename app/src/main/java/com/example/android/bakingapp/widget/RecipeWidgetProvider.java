@@ -1,4 +1,4 @@
-package com.example.android.bakingapp;
+package com.example.android.bakingapp.widget;
 
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
@@ -11,6 +11,9 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.RemoteViews;
 
+import com.example.android.bakingapp.DetailActivity;
+import com.example.android.bakingapp.MainActivity;
+import com.example.android.bakingapp.R;
 import com.example.android.bakingapp.model.Recipe;
 import com.example.android.bakingapp.utilities.GsonUtils;
 
@@ -38,16 +41,22 @@ public class RecipeWidgetProvider extends AppWidgetProvider {
             String recipeName = recipe.getName();
             views.setTextViewText(R.id.appwidget_recipe_name, recipeName);
 
-            // Construct the RemoteViews object
+            Intent listIntent = new Intent(context, ListWidgetService.class);
+            views.setRemoteAdapter(R.id.appwidget_ingredient_list, listIntent);
+
             intent = new Intent(context, DetailActivity.class);
             intent.putExtra(DetailActivity.RECIPE_EXTRA, recipeJson);
         }
         else {
             intent = new Intent(context, MainActivity.class);
+
+
         }
 
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         views.setOnClickPendingIntent(R.id.recipe_widget, pendingIntent);
+
+        views.setEmptyView(R.id.appwidget_ingredient_list, R.id.empty_view);
 
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);

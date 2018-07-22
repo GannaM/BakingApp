@@ -22,10 +22,8 @@ import com.example.android.bakingapp.model.Recipe;
 import com.example.android.bakingapp.utilities.APIClient;
 import com.example.android.bakingapp.utilities.APIInterface;
 import com.example.android.bakingapp.utilities.GsonUtils;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.example.android.bakingapp.widget.RecipeWidgetProvider;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -189,6 +187,7 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapterOnCl
         int[] ids = appWidgetManager.getAppWidgetIds(new ComponentName(this, RecipeWidgetProvider.class));
         if (ids != null && ids.length > 0) {
             appWidgetManager.notifyAppWidgetViewDataChanged(ids, R.id.recipe_widget);
+            appWidgetManager.notifyAppWidgetViewDataChanged(ids, R.id.appwidget_ingredient_list);
             widgetUpdateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
             this.sendBroadcast(widgetUpdateIntent);
         }
