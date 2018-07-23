@@ -37,9 +37,10 @@ public class StepDetailActivity extends AppCompatActivity {
         String json = intent.getStringExtra(STEP_EXTRA);
         if (json != null) {
             if (!json.isEmpty()) {
-                Gson gson = new Gson();
-                Type type = new TypeToken<Step>() {}.getType();
-                mStep = gson.fromJson(json, type);
+//                Gson gson = new Gson();
+//                Type type = new TypeToken<Step>() {}.getType();
+//                mStep = gson.fromJson(json, type);
+                mStep = GsonUtils.jsonStringToStep(json);
             }
         }
 
@@ -48,8 +49,10 @@ public class StepDetailActivity extends AppCompatActivity {
             mRecipe = GsonUtils.jsonStringToRecipe(recipeJson);
         }
 
+        if (mRecipe != null) {
+            setTitle(mRecipe.getName());
+        }
 
-        setTitle(mRecipe.getName());
 
         if (savedInstanceState == null) {
             FragmentManager fragmentManager = getSupportFragmentManager();
