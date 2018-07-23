@@ -67,17 +67,6 @@ public class StepDetailActivity extends AppCompatActivity {
 
         }
 
-//        FragmentManager fragmentManager = getSupportFragmentManager();
-//
-//        StepDetailFragment fragment = (StepDetailFragment) fragmentManager.findFragmentById(R.id.step_detail_fragment);
-//        fragment.setStepList(mRecipe.getSteps());
-//
-//        if (savedInstanceState == null) {
-//            fragment.setStep(mStep);
-//            fragment.configure();
-//        }
-
-
 
     }
 }
