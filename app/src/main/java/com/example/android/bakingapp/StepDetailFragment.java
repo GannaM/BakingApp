@@ -71,6 +71,8 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
     private List<Step> mStepList;
     private Step mStep;
     private int mStepId;
+    private int mStepIndex;
+    //private int videoId;
 
     private boolean isTablet;
     private Context mContext;
@@ -78,7 +80,9 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
     private SimpleExoPlayer mExoPlayer;
     private static MediaSessionCompat mMediaSession;
     private PlaybackStateCompat.Builder mStateBuilder;
-    private NotificationManager mNotificationManager;
+
+    private boolean mPlayWhenReady;
+    private long mPlaybackPosition;
 
     public StepDetailFragment() {
     }
@@ -98,82 +102,143 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
             mStepList = recipe.getSteps();
             mStep = mStepList.get(mStepId);
 
-            boolean playerIsActive = savedInstanceState.getBoolean("playerState");
-            if (playerIsActive) {
-                long playerPosition = savedInstanceState.getLong("playerPosition");
-                configure();
-                mExoPlayer.seekTo(playerPosition);
-            }
-            configure();
+            mPlaybackPosition = savedInstanceState.getLong("playerPosition");
+            mPlayWhenReady = savedInstanceState.getBoolean("playerState");
+
         }
+        else {
+            mPlayWhenReady = true;
+        }
+
 
         configure();
 
         return rootView;
     }
 
-    @OnClick(R.id.button_next)
-    public void showNextRecipe() {
-        mStepId++;
-        mStep = mStepList.get(mStepId);
-
-        releasePlayer();
-        deactivateMediaSession();
-
-        configure();
-        mButtonPrevious.setEnabled(true);
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mContext = context;
     }
 
-    @OnClick(R.id.button_previous)
-    public void showPreviousRecipe() {
-        mStepId--;
-        mStep = mStepList.get(mStepId);
-
-        deactivateMediaSession();
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
         releasePlayer();
+        deactivateMediaSession();
 
-        configure();
-        mButtonNext.setEnabled(true);
+        unbinder.unbind();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mExoPlayer != null) {
+            mPlayWhenReady = mExoPlayer.getPlayWhenReady();
+            mPlaybackPosition = mExoPlayer.getCurrentPosition();
+        }
+
+        if (Util.SDK_INT <= 23) {
+            releasePlayer();
+            deactivateMediaSession();
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        if (Util.SDK_INT > 23) {
+            releasePlayer();
+            deactivateMediaSession();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (Util.SDK_INT <= 23 || mExoPlayer == null) {
+            String videoUrl = mStep.getVideoUrl();
+            if (!videoUrl.isEmpty()) {
+                initializeMediaSession();
+                initializePlayer(Uri.parse(videoUrl));
+            }
+        }
     }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        boolean playerIsActive = false;
+
         if (mExoPlayer != null) {
-            playerIsActive = true;
             long playerPosition = mExoPlayer.getCurrentPosition();
+            boolean playerState = mExoPlayer.getPlayWhenReady();
+
             outState.putLong("playerPosition", playerPosition);
+            outState.putBoolean("playerState", playerState);
         }
-        outState.putBoolean("playerState", playerIsActive);
+
         outState.putInt("stepId", mStepId);
 
     }
 
-//    @Override
-//    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-//        super.onViewStateRestored(savedInstanceState);
-//        mStepId = savedInstanceState.getInt("stepId");
-//        mStep = mStepList.get(mStepId);
-//
-//        boolean playerIsActive = savedInstanceState.getBoolean("playerState");
-//        if (playerIsActive) {
-//            long playerPosition = savedInstanceState.getLong("playerState");
-//            mExoPlayer.seekTo(playerPosition);
-//
-//        }
-//    }
+    @OnClick(R.id.button_next)
+    public void showNextRecipe() {
+        if (mStepIndex < mStepList.size()-1) {
+            mStepIndex++;
+            mStep = mStepList.get(mStepIndex);
+
+            releasePlayer();
+            deactivateMediaSession();
+
+            mPlaybackPosition = 0; // reset player position, in case it was saved earlier
+            configure();
+        }
+        //mButtonPrevious.setEnabled(true);
+    }
+
+    @OnClick(R.id.button_previous)
+    public void showPreviousRecipe() {
+        if (mStepIndex > 0) {
+            mStepIndex--;
+            mStep = mStepList.get(mStepIndex);
+
+            deactivateMediaSession();
+            releasePlayer();
+
+            mPlaybackPosition = 0; // reset player position, in case it was saved earlier
+            configure();
+        }
+
+        //mButtonNext.setEnabled(true);
+    }
+
+
+    private void enableDisableButtons() {
+        int firstStep = mStepList.get(0).getId();
+        int lastStep = mStepList.get(mStepList.size()-1).getId();
+
+
+        if (mStepId == firstStep) {
+            mButtonPrevious.setEnabled(false);
+            mButtonNext.setEnabled(true);
+        }
+        else if (mStepId == lastStep) {
+            mButtonNext.setEnabled(false);
+            mButtonPrevious.setEnabled(true);
+        }
+        else {
+            mButtonNext.setEnabled(true);
+            mButtonPrevious.setEnabled(true);
+        }
+    }
 
     public void configure() {
         mStepId = mStep.getId();
 
         if (!isTablet) {
-            if (mStepId == 0) {
-                mButtonPrevious.setEnabled(false);
-            }
-            if (mStepId == mStepList.size()-1) {
-                mButtonNext.setEnabled(false);
-            }
+            enableDisableButtons();
         }
         else {
             mButtonPrevious.setVisibility(View.GONE);
@@ -221,20 +286,7 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
         mStep = step;
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        mContext = context;
-    }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        releasePlayer();
-        deactivateMediaSession();
-
-        unbinder.unbind();
-    }
 
     private void deactivateMediaSession() {
         if (mMediaSession != null) {
@@ -266,7 +318,6 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
     }
 
     private void initializePlayer(Uri mediaUri) {
-        //Context context = getActivity().getApplicationContext();
 
         if (mExoPlayer == null) {
             TrackSelector trackSelector = new DefaultTrackSelector();
@@ -280,7 +331,8 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
                     mContext, userAgent), new DefaultExtractorsFactory(), null, null);
 
             mExoPlayer.prepare(mediaSource);
-            mExoPlayer.setPlayWhenReady(true);
+            mExoPlayer.setPlayWhenReady(mPlayWhenReady);
+            mExoPlayer.seekTo(mPlaybackPosition);
         }
     }
 
