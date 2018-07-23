@@ -40,7 +40,6 @@ public class Tablet_StepDetailFragmentBasicTest {
     @Before
     public void setup() {
         Intent intent = new Intent(InstrumentationRegistry.getTargetContext(), DetailActivity.class);
-        //intent.putExtra(StepDetailActivity.STEP_EXTRA, stepJsonExtra);
         intent.putExtra(DetailActivity.RECIPE_EXTRA, recipeJsonExtra);
 
         mActivityTestRule.launchActivity(intent);

@@ -25,9 +25,6 @@ public class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.
     }
 
     public class IngredientsAdapterViewHolder extends RecyclerView.ViewHolder {
-//        @BindView(R.id.quantity_tv) TextView quantity;
-//        @BindView(R.id.measure_tv) TextView measure;
-//        @BindView(R.id.ingredient_tv) TextView ingredient;
         public final TextView quantity;
         public final TextView measure;
         public final TextView ingredient;
@@ -35,7 +32,6 @@ public class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.
 
         public IngredientsAdapterViewHolder(View view) {
             super(view);
-            //ButterKnife.bind(view);
             quantity = view.findViewById(R.id.quantity_tv);
             measure = view.findViewById(R.id.measure_tv);
             ingredient = view.findViewById(R.id.ingredient_tv);

@@ -81,9 +81,6 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeAdap
         if (!imageUrl.isEmpty()) {
             Picasso.with(mContext)
                     .load(imageUrl)
-                    //.fit()
-                    //.centerInside()
-
                     .resize(200, 200)
                     .onlyScaleDown()
                     .centerCrop()

@@ -28,12 +28,10 @@ public class StepsAdapter extends RecyclerView.Adapter<StepsAdapter.StepsAdapter
     }
 
     public class StepsAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        //@BindView(R.id.step_tv) TextView mStepShortDescription;
         public final TextView mStepShortDescription;
 
         public StepsAdapterViewHolder(View view) {
             super(view);
-            //ButterKnife.bind(view);
             mStepShortDescription = view.findViewById(R.id.step_tv);
             view.setOnClickListener(this);
         }
