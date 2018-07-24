@@ -63,4 +63,19 @@ public class Step {
     public void setThumbnailUrl(String url) {
         this.thumbnailUrl = url;
     }
+
+
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        else if (obj == null) {
+            return false;
+        }
+        else if (obj instanceof Step) {
+            Step step = (Step) obj;
+            return step.id == this.id;
+        }
+        return false;
+    }
 }

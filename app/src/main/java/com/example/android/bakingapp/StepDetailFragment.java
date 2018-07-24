@@ -1,19 +1,13 @@
 package com.example.android.bakingapp;
 
-import android.app.PendingIntent;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.media.session.MediaButtonReceiver;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,7 +30,7 @@ import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
-import com.google.android.exoplayer2.trackselection.TrackSelection;
+
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
@@ -63,16 +57,12 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
     @BindView(R.id.button_previous) Button mButtonPrevious;
     private Unbinder unbinder;
 
-    public static final String STEP_ID_LIST = "step_ids";
-    public static final String LIST_INDEX = "list_index";
-
     private static final String TAG = "StepDetailFragment";
 
     private List<Step> mStepList;
     private Step mStep;
     private int mStepId;
     private int mStepIndex;
-    //private int videoId;
 
     private boolean isTablet;
     private Context mContext;
@@ -109,7 +99,6 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
         else {
             mPlayWhenReady = true;
         }
-
 
         configure();
 
@@ -180,11 +169,11 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
         }
 
         outState.putInt("stepId", mStepId);
-
     }
 
     @OnClick(R.id.button_next)
     public void showNextRecipe() {
+
         if (mStepIndex < mStepList.size()-1) {
             mStepIndex++;
             mStep = mStepList.get(mStepIndex);
@@ -195,11 +184,11 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
             mPlaybackPosition = 0; // reset player position, in case it was saved earlier
             configure();
         }
-        //mButtonPrevious.setEnabled(true);
     }
 
     @OnClick(R.id.button_previous)
     public void showPreviousRecipe() {
+
         if (mStepIndex > 0) {
             mStepIndex--;
             mStep = mStepList.get(mStepIndex);
@@ -211,7 +200,6 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
             configure();
         }
 
-        //mButtonNext.setEnabled(true);
     }
 
 
@@ -286,6 +274,10 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
         mStep = step;
     }
 
+    public void setListIndex(int index) {
+        mStepIndex = index;
+    }
+
 
 
     private void deactivateMediaSession() {
@@ -295,7 +287,6 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
     }
 
     private void initializeMediaSession() {
-        //Context context = getActivity().getApplicationContext();
         mMediaSession = new MediaSessionCompat(mContext, TAG);
 
         mMediaSession.setFlags(
@@ -397,8 +388,6 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
                     mExoPlayer.getCurrentPosition(), 1f);
         }
         mMediaSession.setPlaybackState(mStateBuilder.build());
-        //showNotification(mStateBuilder.build());
-
     }
 
     @Override
@@ -410,7 +399,5 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
     public void onPositionDiscontinuity() {
 
     }
-
-
 
 }

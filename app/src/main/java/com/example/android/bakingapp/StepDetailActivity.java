@@ -14,6 +14,8 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 public class StepDetailActivity extends AppCompatActivity {
 
@@ -37,9 +39,6 @@ public class StepDetailActivity extends AppCompatActivity {
         String json = intent.getStringExtra(STEP_EXTRA);
         if (json != null) {
             if (!json.isEmpty()) {
-//                Gson gson = new Gson();
-//                Type type = new TypeToken<Step>() {}.getType();
-//                mStep = gson.fromJson(json, type);
                 mStep = GsonUtils.jsonStringToStep(json);
             }
         }
@@ -60,13 +59,13 @@ public class StepDetailActivity extends AppCompatActivity {
             StepDetailFragment fragment = new StepDetailFragment();
             fragment.setStep(mStep);
             fragment.setStepList(mRecipe.getSteps());
+            fragment.setListIndex(mRecipe.getSteps().indexOf(mStep));
 
             fragmentManager.beginTransaction()
                     .add(R.id.step_detail_fragment, fragment)
                     .commit();
 
         }
-
 
     }
 }
