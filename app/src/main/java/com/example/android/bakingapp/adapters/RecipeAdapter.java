@@ -79,7 +79,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeAdap
 
         String imageUrl = recipe.getImageUrl();
         if (!imageUrl.isEmpty()) {
-            Picasso.with(mContext)
+            Picasso.get()
                     .load(imageUrl)
                     .resize(200, 200)
                     .onlyScaleDown()

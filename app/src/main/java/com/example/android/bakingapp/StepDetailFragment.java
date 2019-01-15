@@ -252,7 +252,7 @@ public class StepDetailFragment extends Fragment implements ExoPlayer.EventListe
 
         String thumbnailUrl = mStep.getThumbnailUrl();
         if (!thumbnailUrl.isEmpty()) {
-            Picasso.with(mContext)
+            Picasso.get()
                     .load(thumbnailUrl)
                     .placeholder(R.drawable.cooking)
                     .into(mStepImageView);
