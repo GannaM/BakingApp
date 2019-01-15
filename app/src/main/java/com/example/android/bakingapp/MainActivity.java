@@ -52,9 +52,11 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapterOnCl
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+        // Setup Recipe Adapter
         mRecipeAdapter = new RecipeAdapter(this, getApplicationContext());
         mRecipeRecyclerView.setAdapter(mRecipeAdapter);
 
+        // If savedInstance State is null, fetch new data
         if (savedInstanceState != null) {
             String recipeJson = savedInstanceState.getString(LIST_KEY);
             mRecipeList = parseStringJson(recipeJson);
@@ -67,6 +69,7 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapterOnCl
             fetchDataAndPopulateUI();
         }
 
+        // Load different views for Tablets and Smartphones
         boolean isTablet = getResources().getBoolean(R.bool.isTablet);
         if (isTablet) {
             GridLayoutManager gridLayoutManager;
@@ -122,7 +125,7 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapterOnCl
         Intent intent = new Intent(this, DetailActivity.class);
         intent.putExtra(DetailActivity.RECIPE_EXTRA, json);
 
-        // Save recipe to SharedPreferences
+        // Save recipe to SharedPreferences to display it in the widget
         SharedPreferences.Editor prefEditor = mSharedPreferences.edit();
         String recipeKey = getString(R.string.desired_recipe_key);
         prefEditor.putString(recipeKey, json);
